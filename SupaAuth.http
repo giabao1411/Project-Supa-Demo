@@ -1,0 +1,6 @@
+@SupaAuth_HostAddress = http://localhost:5075
+
+GET {{SupaAuth_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
