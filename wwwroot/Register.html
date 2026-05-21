@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Registration Interface | Tech-Comm</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111418] dark:text-white min-h-screen">
+<div class="flex min-h-screen flex-col lg:flex-row">
+<div class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#111418] items-center justify-center p-12">
+<div class="absolute inset-0 z-0 opacity-40 bg-cover bg-center" data-alt="Abstract digital blue glowing tech network pattern" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBKt0JbthSzMJC9fERHOKBL2izst0uWpHuyLOEJY4gzFhx97TNav8GlV24oqMrWLwKF9zycg4oDSTWzMpQu-t_lAK-ujQgi-8TmTp5XTy2QhuwFmWqot87wGwcMQTEzwW8vkEYwdsMcjzvD1PTnR_RlWxIBPU01V1AnNeNCUEddLqdpRcoNavMFIgmoGL7uI53dtoJ5Z7BpEyh93Yj0od2G-cnLwHcRh_PARx8pnlzxJgmUQi9EkHOzy5FundAuFtzL3VbARaA8pfIT');">
+</div>
+<div class="absolute inset-0 z-10 bg-gradient-to-br from-primary/40 to-black/80"></div>
+<div class="relative z-20 max-w-lg">
+<div class="mb-8 flex items-center gap-3 text-white">
+<div class="size-10 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-3xl">rocket_launch</span>
+</div>
+<span class="text-2xl font-bold tracking-tight">Tech-Comm</span>
+</div>
+<h1 class="text-white text-5xl font-black leading-tight tracking-tight mb-6">
+                Powering the next generation of professional workflows.
+            </h1>
+<p class="text-white/80 text-lg leading-relaxed mb-8">
+                Access the world's most advanced tech hardware and software solutions in one unified dashboard.
+            </p>
+<div class="items-center gap-6 hidden lg:flex">
+<div class="flex -space-x-3">
+<div class="h-10 w-10 rounded-full border-2 border-[#111418] bg-gray-300 bg-cover bg-center" data-alt="User avatar 1" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDHcHskC5jtxfOwPLenP0okIOcmw7UbjCUxtNLQHM8g3KL3VVCnxPWDrxebpaxkUreqU0ajvFvIz46zk7gj_hpGdd5dwpIQIUbq4sj_clUksf7uTVN2ZSyz5K68mA3nmybDY9-mdQXpzUnDR6hLkAlBoG6pGYjDa5xicGakkROaILoBGgOMZ7dX5aCTzbFbnYG3ZBgVGvz3TVnzCkQ3yUc2iE3B8acARgb3TWzZfnuVYxjx9qyw3noJRtf7TjoSnIzcu5sn1Vbhix9K')"></div>
+<div class="h-10 w-10 rounded-full border-2 border-[#111418] bg-gray-300 bg-cover bg-center" data-alt="User avatar 2" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBWEiPvDCuzq5q8mkabqJkpBLs4Qbf-YNFsS44KTBxE5uAzlC2UDosrtR7uzoRFJN1yhcHz04QtGOxvec2mSSaG-jOeBi79H5OIC8wCi965U4LvIWHvfHmWOMKq1RnIGNW03uo9IcCbwgDJtnSDTP_CFxR2-g0Mn3i-f9m97QSEqY8fAwBZkk5pueVUOJe_x812IQYD7Q8TdBgagmTj88QuO7AwSv76ie_nB0BiM2vCN91YMNTjAR1Q9L8HKJLQCIPlFf4HK2ZyNCLp')"></div>
+<div class="h-10 w-10 rounded-full border-2 border-[#111418] bg-gray-300 bg-cover bg-center" data-alt="User avatar 3" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuChPXnR-PzZWV1d0k4tl2V9SAsVPjUJ1nZ0UL3S4pmTUdmenw5WL39RJ9spFr9Zlxxynjoye4o7awLgMGP0mr3tB0DW2FDJS78XBxqYOspObZo7Xw8Yd5uUvLgFxdF1e-l34fSxszVs3vvZo2DX6B2XhDXIGhvUv9wMS8yFe6R2gTlez1gr1HT7Ow56EJi8X6aChLrO9cr7JOMKDRK6FF5-yD1_CRx_B6a8TA6wm_PiBHgdpYvEkLNYqWiFsMfSgC_CvKHCdqjrBcZ3')"></div>
+</div>
+<span class="text-sm font-medium text-white/90">Trusted by 10k+ professionals</span>
+</div>
+</div>
+</div>
+<div class="flex flex-1 flex-col justify-center px-6 py-12 lg:px-24 bg-background-light dark:bg-background-dark overflow-y-auto">
+<div class="mx-auto w-full max-w-[480px]">
+<div class="lg:hidden flex items-center gap-2 mb-10 text-primary">
+<span class="material-symbols-outlined text-4xl">rocket_launch</span>
+<h2 class="text-2xl font-bold tracking-tight text-[#111418] dark:text-white">Tech-Comm</h2>
+</div>
+<div class="mb-8">
+<h2 class="text-[#111418] dark:text-white tracking-tight text-3xl lg:text-4xl font-bold leading-tight pb-2">Create Account</h2>
+<p class="text-[#617589] dark:text-gray-400 text-base font-normal">Join our community of tech-savvy professionals.</p>
+</div>
+<form class="space-y-5">
+<div class="flex flex-col gap-2">
+<label class="text-[#111418] dark:text-gray-200 text-sm font-bold leading-normal">Full Name</label>
+<div class="relative">
+<input id="txtUserName" class="form-input flex w-full rounded-lg text-[#111418] dark:text-white border border-[#dbe0e6] dark:border-gray-700 bg-white dark:bg-[#1a2632] focus:outline-0 focus:ring-2 focus:ring-primary/50 focus:border-primary h-12 lg:h-14 placeholder:text-[#617589] px-4 text-base font-normal transition-all" placeholder="John Doe" required="" type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-[#111418] dark:text-gray-200 text-sm font-bold leading-normal">Email Address</label>
+<div class="relative">
+<input id="txtEmail" class="form-input flex w-full rounded-lg text-[#111418] dark:text-white border border-[#dbe0e6] dark:border-gray-700 bg-white dark:bg-[#1a2632] focus:outline-0 focus:ring-2 focus:ring-primary/50 focus:border-primary h-12 lg:h-14 placeholder:text-[#617589] px-4 text-base font-normal transition-all" placeholder="professional@tech.com" required="" type="email"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-[#111418] dark:text-gray-200 text-sm font-bold leading-normal">Password</label>
+<div class="relative">
+<input id="txtPassword" class="form-input flex w-full rounded-lg text-[#111418] dark:text-white border border-[#dbe0e6] dark:border-gray-700 bg-white dark:bg-[#1a2632] focus:outline-0 focus:ring-2 focus:ring-primary/50 focus:border-primary h-12 lg:h-14 placeholder:text-[#617589] px-4 pr-12 text-base font-normal transition-all" placeholder="••••••••" required="" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-[#617589] hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-[#111418] dark:text-gray-200 text-sm font-bold leading-normal">Confirm Password</label>
+<div class="relative">
+<input id="txtcofirmPassword" class="form-input flex w-full rounded-lg text-[#111418] dark:text-white border border-[#dbe0e6] dark:border-gray-700 bg-white dark:bg-[#1a2632] focus:outline-0 focus:ring-2 focus:ring-primary/50 focus:border-primary h-12 lg:h-14 placeholder:text-[#617589] px-4 pr-12 text-base font-normal transition-all" placeholder="••••••••" required="" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-[#617589] hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<button id="registerBtn" class="flex w-full items-center justify-center rounded-lg h-14 px-5 bg-primary hover:bg-primary/90 text-white text-base font-bold tracking-tight transition-all shadow-lg shadow-primary/20 mt-4" type="submit">
+                    Create Account
+                </button>
+<div class="flex items-center gap-4 py-2">
+<div class="h-[1px] flex-1 bg-[#dbe0e6] dark:bg-gray-700"></div>
+<span class="text-sm font-medium text-[#617589] uppercase">Or</span>
+<div class="h-[1px] flex-1 bg-[#dbe0e6] dark:bg-gray-700"></div>
+</div>
+<button class="flex w-full items-center justify-center gap-3 rounded-lg h-14 px-5 border border-[#dbe0e6] dark:border-gray-700 bg-white dark:bg-[#1a2632] text-[#111418] dark:text-white text-base font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-all" type="button">
+<svg class="h-5 w-5" viewBox="0 0 24 24">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+                    Continue with Google
+                </button>
+</form>
+<div class="mt-8 text-center">
+<p class="text-base text-[#617589] dark:text-gray-400">
+                    Already have an account? 
+                    <a class="text-primary font-bold hover:underline" href="/Login.html">Login here</a>
+</p>
+</div>
+<div class="mt-12 pt-8 border-t border-[#dbe0e6] dark:border-gray-800 flex items-center justify-center gap-2 text-[#617589] dark:text-gray-500 text-xs font-medium uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">lock</span>
+                Secure, encrypted connection
+            </div>
+</div>
+</div>
+</div>
+<script>
+    const API = "http://localhost:5075/api/auth";
+var registerBtn = document.getElementById("registerBtn");
+registerBtn.addEventListener("click", function(event) {
+    event.preventDefault();
+    
+    registerUser();
+});
+async function registerUser(){
+    const fullName = document.getElementById('txtUserName').value.trim();
+    const email = document.getElementById('txtEmail').value.trim();
+    const password = document.getElementById('txtPassword').value;
+    const confirmPassword = document.getElementById('txtcofirmPassword').value;
+    if(password !== confirmPassword){
+        alert("Password and Confirm Password do not match");
+        return;
+    }
+    const userData = {
+        userName: fullName,
+        Email: email,
+        password: password,
+        coffirmPassword: confirmPassword
+    };
+    const res = await fetch(`${API}/register`,{
+        method: 'POST',
+        headers:{
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(userData)
+    })
+    if(res.ok){
+        
+        alert("Registration successful!");
+        window.location.href = "/Home.html";
+    } else {
+        const error = await res.text();
+        alert("Registration failed: " + error);
+        window.location.href = '/Error.html';
+    }
+}
+</script>
+</body></html>

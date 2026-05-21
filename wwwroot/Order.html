@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TechStore Admin - User Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://unpkg.com/flowbite@latest/dist/flowbite.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#137fec",
+                "background-light": "#f6f7f8",
+                "background-dark": "#101922",
+              },
+              fontFamily: {
+                "display": ["Space Grotesk"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+        </script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  </head>
+  
+ <body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex">
+
+   
+  <div id="contentAdminView" style="display: block;" class="flex-1 flex flex-col">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark flex flex-col fixed h-full z-30">
+      <div class="p-6 flex items-center gap-3">
+    <div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+      <span class="material-icons text-white text-lg">memory</span>
+    </div>
+    <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-none">TechStore<br><span class="text-xs font-normal text-slate-500 uppercase tracking-widest">Admin Panel</span></span>
+  </div>
+  <nav class="flex-1 px-4 mt-4 space-y-1">
+    <a class="flex items-center px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors group" href="#">
+      <span class="material-icons mr-3">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<a class="flex items-center px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors group" href="./AdminView.html">
+  <span class="material-icons mr-3">people</span>
+<span class="font-medium">Users</span>
+</a>
+<a class="flex items-center px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors group" href="./Product.html">
+  <span class="material-icons mr-3">inventory_2</span>
+  <span class="font-medium">Products</span>
+</a>
+<a class="flex items-center px-4 py-3 text-primary bg-primary/10 rounded-lg transition-colors group" href="#">
+  <span class="material-icons mr-3">shopping_cart</span>
+  <span class="font-medium">Orders</span>
+</a>
+<a href="./Setting.html" class="flex items-center px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors group">
+<span class="material-icons mr-3">settings</span>
+<span class="font-medium">Settings</span>
+</a>
+</nav>
+<div class="p-4 mt-auto border-t border-slate-100 dark:border-slate-800">
+  <div class="flex items-center p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+    <img class="w-10 h-10 rounded-full object-cover" data-alt="Admin user profile picture" id="imgAvatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5c_THALLACnxt1KbYOD9UTv9xXZRVs7zv9jWKIp27XDqMFuEZ3pyd9WskKA35BqUm_PorbOGmTyoiAH-7uXqf2B5WyBoTGM1ui7BnwyzF6xb5HptQulAdK9hnWMAA3zaH209KU57qrTwwgIp33RdLyndFKwrOvuBHupeIc8-kgKvm6GSMs5d_8H-jKWqlcxfwgkPCFhXfGU-PS-WXJ-z-JGtX0UY3ja88FWj-Qu8l3ERYWBq0l53rvxLB2ZzTMvUbcRmCOgJ1N1FA">
+    <div class="ml-3">
+<p id="lblUserName" class="text-sm font-semibold text-slate-900 dark:text-white">baocg@gmail.com</p>
+<p id="lblRole" class="text-xs text-slate-500">Admin</p>
+</div>
+<button id="btnLogOut" class="ml-auto text-slate-400 hover:text-primary">
+  <span class="material-icons text-xl">logout</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 flex flex-col min-h-screen">
+  <!-- Top Header -->
+<header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-20 px-8 flex items-center justify-between">
+  <div class="flex items-center text-slate-500 text-sm">
+    <span>Console</span>
+<span class="material-icons text-xs mx-2">chevron_right</span>
+<span class="text-slate-900 dark:text-white font-medium">Order Management</span>
+</div>
+<div class="flex items-center gap-4">
+  <button class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg relative">
+    <span class="material-icons">notifications</span>
+    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-background-dark"></span>
+  </button>
+  <button class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+    <span class="material-icons">help_outline</span>
+</button>
+</div>
+</header>
+<!-- Main Workspace -->
+<div class="p-8">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+<div>
+  <h1 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Order Management</h1>
+<p class="text-slate-500 mt-1">Review and fulfill customer transactions across all channels.</p>
+</div>
+<button id="btnAddUser" class="inline-flex items-center justify-center px-5 py-2.5 bg-primary text-white font-semibold rounded-lg shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">
+  <span class="material-icons mr-2">person_add</span>
+  Add New Order
+</button>
+</div>
+<!-- Stats Bar -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800">
+    <p class="text-slate-500 text-sm font-medium">Total Orders</p>
+    <p class="text-2xl font-bold mt-1 text-slate-900 dark:text-white">1,248</p>
+    <div class="flex items-center mt-2 text-emerald-500 text-xs">
+      <span class="material-icons text-xs mr-1">trending_up</span>
+<span>12% from last month</span>
+</div>
+</div>
+
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800">
+<p class="text-slate-500 text-sm font-medium">Pending Orders</p>
+<p class="text-2xl font-bold mt-1 text-slate-900 dark:text-white">12</p>
+<div class="flex items-center mt-2 text-amber-500 text-xs">
+  <span class="material-icons text-xs mr-1">timer</span>
+  <span>Requires action</span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800">
+  <p class="text-slate-500 text-sm font-medium">Monthly Revenue</p>
+  <p class="text-2xl font-bold mt-1 text-slate-900 dark:text-white">4</p>
+<div class="flex items-center mt-2 text-violet-500 text-xs">
+  <span class="material-icons text-xs mr-1">security</span>
+  <span>+8,2% vs last month</span>
+</div>
+</div>
+</div>
+<!-- Filters & Search -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl mb-6 p-4 flex flex-col md:flex-row gap-4">
+<div class="relative flex-1">
+  <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+  <input id="txtSearch" class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-lg focus:ring-2 focus:ring-primary/20 transition-all text-sm" placeholder="Search by order, invoices" type="text">
+</div>
+<div class="flex items-center gap-2">
+  <select id="ddlRoles" class="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-sm px-4 py-2 pr-10 focus:ring-2 focus:ring-primary/20"><option selected="" value="">All Roles</option><option value="11111111-1111-1111-1111-111111111111">Admin</option><option value="22222222-2222-2222-2222-222222222222">User</option><option value="46b68a70-4cec-4552-8890-870399fb7a20">Bảo</option></select>
+<select class="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-sm px-4 py-2 pr-10 focus:ring-2 focus:ring-primary/20">
+  <option>All Status</option>
+<option>Active</option>
+<option>Pending</option>
+<option>Blocked</option>
+</select>
+<button class="inline-flex items-center px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+  <span class="material-icons text-sm mr-2">filter_list</span>
+  More Filters
+                    </button>
+</div>
+</div>
+<!-- Data Table -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+  <table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50/50 dark:bg-slate-800/50 text-slate-500 text-xs font-semibold uppercase tracking-wider">
+<th class="px-6 py-4 w-10">
+<input class="rounded text-primary focus:ring-primary/20 border-slate-300 dark:border-slate-700 bg-transparent" type="checkbox">
+</th>
+<th class="px-6 py-4">Customer</th>
+<th class="px-6 py-4">Date</th>
+<th class="px-6 py-4">Amount</th>
+<th class="px-6 py-4">Status
+</th>
+<th class="px-6 py-4 text-right">Actions</th>
+</tr>
+</thead>
+<tbody id="tblOrdersBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+  <p id="divResultInfo" class="text-sm text-slate-500 font-medium">
+        Showing <span class="text-slate-900 dark:text-white">1</span> to <span class="text-slate-900 dark:text-white">10</span> of <span class="text-slate-900 dark:text-white">11</span> results
+        </p>
+                    <div id="divPagination" class="flex items-center gap-2">
+            <button class="px-3 py-2 border rounded-l-md bg-white text-gray-500 hover:bg-gray-100" disabled="" data-page="0">
+                Previous
+            </button>
+        
+                    <button class="px-3 py-2 border 
+                        bg-blue-600 text-white" data-page="1">
+                        1
+                    </button>
+                
+                    <button class="px-3 py-2 border 
+                        bg-white text-gray-500 hover:bg-gray-100" data-page="2">
+                        2
+                    </button>
+                
+            <button class="px-3 py-2 border rounded-r-md bg-white text-gray-500 hover:bg-gray-100" data-page="2">
+                Next
+            </button>
+        </div>
+</div>
+</div>
+</div>
+<!-- Modal Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm px-4 hidden" id="addUserModal">
+<!-- Modal Container -->
+<div class="w-full max-w-lg bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+<!-- Modal Header -->
+<div class="px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+<div id="titlePopupAdminView">
+<h3 class="text-xl font-bold text-slate-900 dark:text-slate-100">Add New User</h3>
+<p class="text-sm text-slate-500 mt-1">Fill in the details to create a new account.</p>
+</div>
+<button id="btnCloseUserModal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Modal Form -->
+<form class="p-8 space-y-5">
+<!-- Full Name -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Full Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
+<input id="txtUserName" class="w-full pl-11 pr-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-slate-900 dark:text-slate-100" placeholder="e.g. John Doe" type="text">
+</div>
+</div>
+<!-- Email Address -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">mail</span>
+<input id="txtEmail" class="w-full pl-11 pr-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-slate-900 dark:text-slate-100" placeholder="john@techstore.com" type="email">
+</div>
+</div>
+<!-- Role Selection -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">User Role</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">badge</span>
+<div class="choices" data-type="select-multiple" role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="false"><div class="choices__inner"><select multiple="" id="dropDownRoles" class="w-full pl-11 pr-10 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:border-primary focus:ring-1 focus:ring-primary outline-none appearance-none transition-all text-slate-900 dark:text-slate-100 choices__input" hidden="" tabindex="-1" data-choice="active">
+
+<!-- <option value="admin">Admin</option>
+<option value="editor">Editor</option>
+<option value="customer">Customer</option> -->
+<option value="11111111-1111-1111-1111-111111111111">Admin</option><option value="22222222-2222-2222-2222-222222222222">User</option><option value="46b68a70-4cec-4552-8890-870399fb7a20">Bảo</option></select><div class="choices__list choices__list--multiple" role="listbox"></div><input type="search" class="choices__input choices__input--cloned" autocomplete="off" autocapitalize="off" spellcheck="false" aria-autocomplete="list" style="min-width: 1ch; width: 1ch;"></div><div class="choices__list choices__list--dropdown" aria-expanded="false"><div class="choices__list" aria-multiselectable="true" role="listbox"><div id="choices--dropDownRoles-item-choice-1" class="choices__item choices__item--choice choices__item--selectable is-highlighted" role="option" data-choice="" data-id="1" data-value="11111111-1111-1111-1111-111111111111" data-select-text="Press to select" data-choice-selectable="" aria-selected="true">Admin</div><div id="choices--dropDownRoles-item-choice-2" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="2" data-value="22222222-2222-2222-2222-222222222222" data-select-text="Press to select" data-choice-selectable="" aria-selected="false">User</div><div id="choices--dropDownRoles-item-choice-3" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="3" data-value="46b68a70-4cec-4552-8890-870399fb7a20" data-select-text="Press to select" data-choice-selectable="" aria-selected="false">Bảo</div></div></div></div>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Password Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">lock</span>
+<input id="txtPassword" class="w-full pl-11 pr-10 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-slate-900 dark:text-slate-100" type="password" placeholder="••••••••">
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-xl">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Confirm Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">lock_clock</span>
+<input id="txtConfirmPassword" class="w-full pl-11 pr-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-slate-900 dark:text-slate-100" type="password" placeholder="••••••••">
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center justify-end gap-3 pt-6 border-t border-slate-100 dark:border-slate-800 mt-4">
+<button id="btnCancelUserModal" class="px-6 py-2.5 rounded-lg font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" type="button">
+                        Cancel
+                    </button>
+<button id="btnCreateUser" class="px-6 py-2.5 rounded-lg font-bold bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/25 transition-all" type="submit">
+                        Create User
+                    </button>
+</div>
+</form>
+</div>
+</div>
+<!-- Footer Info -->
+<footer class="mt-auto px-8 py-6 text-slate-400 text-xs flex justify-between border-t border-slate-100 dark:border-slate-800">
+<p>© 2024 TechStore Enterprise. All systems operational.</p>
+<div class="flex gap-4">
+  <a class="hover:text-primary transition-colors" href="/Home.html">Home</a>
+  <a class="hover:text-primary transition-colors" href="#">Documentation</a>
+<a class="hover:text-primary transition-colors" href="#">API Support</a>
+</div>
+
+<!-- Popup confirm Delete User -->
+
+<div id="deleteModal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+ 
+
+    <div class="bg-white rounded-lg shadow-lg w-96 p-6">
+
+        <h2 class="text-lg font-semibold text-gray-800">
+            Confirm Delete
+        </h2>
+
+        <p class="text-gray-600 mt-2">
+            Are you sure you want to delete this user?
+        </p>
+
+        <div class="flex justify-end gap-3 mt-6">
+            <button id="btnCancelDelete" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">
+                Cancel
+            </button>
+
+            <button id="btnConfirmDelete" class="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded">
+                Delete
+            </button>
+        </div>
+
+    </div>
+ <div id="idUserTarget" hidden="hidden"></div>
+</div>
+</footer>
+</main>
+</div>
+
+
+ <div id="extension_write_code"><div id="writecode-content"></div></div></body>
+<script type="module" src="./js/Order.js"></script>
+ </html>
+
