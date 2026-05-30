@@ -25,6 +25,8 @@ public class AppDbContext : DbContext
 
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
+
+    public DbSet<ExternalLogin> ExternalLogins { get; set; }
     protected override void OnModelCreating(ModelBuilder b)
     {
          // ROLE IDS
@@ -146,5 +148,15 @@ public class AppDbContext : DbContext
             .WithMany(x => x.Items)
             .HasForeignKey(x => x.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        b.Entity<ExternalLogin>()
+        .HasKey(x => x.Id);
+        
+        b.Entity<ExternalLogin>()
+        .HasOne(x => x.User)
+        .WithMany(x => x.ExternalLogins)
+        .HasForeignKey(x => x.UserId)
+        .OnDelete(DeleteBehavior.Cascade);
+        
     }
 }

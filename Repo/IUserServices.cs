@@ -14,6 +14,8 @@ public interface IUserService
     Task<List<RoleDTO>> GetAllUserRolesAsync();
 
     Task<PageResult<UserDTO>> GetUsersByKeyWordAsync(string keyword,string roleId="",int page=1,int pageSize=10);
+
+    Task<User> FindOrCreateUserOAuth2(string? email, string? name, string provider, string providerId, string? avatar);
    
    
 }

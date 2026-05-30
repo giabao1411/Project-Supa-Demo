@@ -4,7 +4,7 @@ public class User
 {
     public Guid Id { get; set; }
 
-    [Required]
+    // [Required]
     public string PasswordHash { get; set; } = string.Empty;
     [Required]
     public string Email { get; set; } = string.Empty;
@@ -19,6 +19,8 @@ public class User
     public ICollection<EmailVerificationToken> EmailVerificationTokens { get; set; }
 
     public ICollection<PasswordResetToken> PasswordResetTokens { get; set; }
+
+    public ICollection<ExternalLogin> ExternalLogins { get; set; } = [];
 
     // public User(int id, string passwordhash, string email)
     // {

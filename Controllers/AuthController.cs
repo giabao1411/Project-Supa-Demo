@@ -6,6 +6,11 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Cryptography;
 
 [ApiController]
 [Route("api/auth")]
@@ -21,9 +26,11 @@ public class AuthorController : ControllerBase
 
     private readonly IUserService _userService;
     private readonly IAuthService _authService;
+
+    private readonly TokenService _tokenService;
     public AuthorController( RefreshTokenServices refreshTokenServices
     , IEmailVerificationService emailVerificationService,
-    IPasswordResetService passwordResetService, IUserService userService, IAuthService authService)
+    IPasswordResetService passwordResetService, IUserService userService, IAuthService authService, TokenService tokenService)
     {
         
         _refreshTokenServices = refreshTokenServices;
@@ -31,6 +38,7 @@ public class AuthorController : ControllerBase
         _passwordResetService = passwordResetService;
         _userService = userService;
         _authService = authService;
+        _tokenService = tokenService;
 
     }
     
@@ -51,6 +59,85 @@ public class AuthorController : ControllerBase
         }
         return Ok(user);
     }
+
+     [HttpGet("{provider}/login")]
+    public IActionResult Login(string provider)
+    {
+        var redirectUrl =  Url.Action("Callback", "Author", new { provider });
+        var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+        
+        
+        var scheme = provider.ToLower() switch
+        {
+            "google"   => GoogleDefaults.AuthenticationScheme,
+            "facebook" => FacebookDefaults.AuthenticationScheme,
+            _ => throw new ArgumentException("Invalid provider")
+        };
+        
+        return Challenge(properties, scheme);
+    }
+
+   [HttpGet("{provider}/callback")]
+    public async Task<IActionResult> Callback(string provider)
+    {
+        string scheme;
+        switch (provider.ToLower())
+    {
+        case "google":
+            scheme = GoogleDefaults.AuthenticationScheme;
+            break;
+        case "facebook":
+            scheme = FacebookDefaults.AuthenticationScheme;
+            break;
+        default:
+            return BadRequest("Invalid provider");
+    }
+
+        var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        if (!result.Succeeded)
+            return BadRequest("OAuth authentication failed");
+
+        // Lấy thông tin từ claims
+        var claims     = result.Principal!.Claims;
+        var email      = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value ?? "facebook_"+RandomNumberGenerator.GetInt32(1,110)+"@gmail.com";
+        var name       = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+        var providerId = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        var avatar     = claims.FirstOrDefault(c => c.Type == "picture")?.Value;
+
+        // Tìm hoặc tạo user
+        var user = await _userService.FindOrCreateUserOAuth2(email, name, provider, providerId!, avatar);
+
+       
+        var token = await _tokenService.GererateJwtToken(user);
+
+        var refreshToken = await _refreshTokenServices.CreateRefreshTokenAsync(user.Id,HttpContext);
+
+       
+        Response.Cookies.Append("access_token", token, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure   = true,
+            SameSite = SameSiteMode.Lax,
+            Expires  = DateTimeOffset.UtcNow.AddDays(7)
+        });
+        Response.Cookies.Append("refresh_token", refreshToken.Token, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure   = true,
+            SameSite = SameSiteMode.Lax,
+            Expires  = DateTimeOffset.UtcNow.AddDays(7)
+        });
+
+        // Redirect về trang chủ frontend
+        return Redirect("https://localhost:7265/home.html");
+    }
+    [HttpGet("error")]
+    [AllowAnonymous]
+    public IActionResult Error([FromQuery] string message)
+    {
+        return BadRequest(new { error = message });
+    }
+
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] UserDTO userDto)
     {
@@ -79,80 +166,11 @@ public class AuthorController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-        // var email = userDto.Email;
-        // var password = userDto.password;
-        // var confirmPassword = userDto.coffirmPassword;
-        // if(password != confirmPassword)
-        // {
-        //     return BadRequest("Password and Confirm Password do not match");
-        // }
-        // if (await _db.Users.AnyAsync(u => u.Email == email))
-        // {
-        //     return BadRequest("Email already exists");
-        // }
-        // var newUser = new User
-        // {
-        //     Email = email,
-        //     PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
-        //     CreatedAt = DateTime.UtcNow,
-        //     IsEmailVerified = false
-        // };
-
-        // _db.Users.Add(newUser);
-        // await _db.SaveChangesAsync();
-        // // Default role assignment
-        // var role = await _db.Roles.FirstOrDefaultAsync(r => r.Name == "User");
-        // if (role == null)
-        //     throw new Exception("Default role not found");
-        // var userRole = new UserRole
-        // {
-        //     UserId = newUser.Id,
-        //     RoleId = role.Id
-        // };
-        // _db.UserRoles.Add(userRole);
-        // await _db.SaveChangesAsync();
-        // // await _emailVerificationService.SendVerifyEmailAsync(newUser);
-        // //redirect to home page with jwt token and refresh token
-        // //create JWT token here (omitted for brevity)
-        // var token = await GererateJwtToken(newUser);
-        // // refresh token
-        // var refreshToken = await _refreshTokenServices.CreateRefreshTokenAsync(newUser.Id, HttpContext);
-        //set refresh token in http only cookie
+        
 
 
     }
-    // [HttpPost("register-swagger")]
-    // public async Task<IActionResult> Register(string email, string password)
-    // {
-
-    //     if (await _db.Users.AnyAsync(u => u.Email == email))
-    //     {
-    //         return BadRequest("Email already exists");
-    //     }
-    //     var newUser = new User
-    //     {
-    //         Email = email,
-    //         PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
-    //         CreatedAt = DateTime.UtcNow,
-    //         IsEmailVerified = false
-    //     };
-
-    //     _db.Users.Add(newUser);
-    //     await _db.SaveChangesAsync();
-    //     // Default role assignment
-    //     var role = await _db.Roles.FirstOrDefaultAsync(r => r.Name == "User");
-    //     if (role == null)
-    //         throw new Exception("Default role not found");
-    //     var userRole = new UserRole
-    //     {
-    //         UserId = newUser.Id,
-    //         RoleId = role.Id
-    //     };
-    //     _db.UserRoles.Add(userRole);
-    //     await _db.SaveChangesAsync();
-    //     await _emailVerificationService.SendVerifyEmailAsync(newUser);
-    //     return Ok("Registration successful, please verify your email");
-    // }
+    
     [HttpGet("verify-email")]
     public async Task<IActionResult> VerifyEmail([FromQuery] string token)
     {
@@ -173,19 +191,7 @@ public class AuthorController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserDTO userDto)
     {
-        // var email = userDto.Email;
-        // var password = userDto.password;
-
-        // var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
-        // if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
-        // {
-        //     return Unauthorized("Invalid credentials");
-        // }
-        // //create JWT token here (omitted for brevity)
-        // var token = await GererateJwtToken(user);
-        // // refresh token
-        // var refreshToken = await _refreshTokenServices.CreateRefreshTokenAsync(user.Id, HttpContext);
-        //set refresh token in http only cookie
+        
         try
         {
             var result = await _authService.LoginAsync(userDto, HttpContext);
@@ -214,36 +220,7 @@ public class AuthorController : ControllerBase
         }
     }
 
-    // [HttpPost("login-swagger")]
-    // public async Task<IActionResult> Login(string email, string password)
-    // {
-
-    //     var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
-    //     if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
-    //     {
-    //         return Unauthorized("Invalid credentials");
-    //     }
-    //     //create JWT token here (omitted for brevity)
-    //     var token = await GererateJwtToken(user);
-    //     // refresh token
-    //     var refreshToken = await _refreshTokenServices.CreateRefreshTokenAsync(user.Id, HttpContext);
-    //     //set refresh token in http only cookie
-    //     Response.Cookies.Append("refresh_token", refreshToken.Token, new CookieOptions
-    //     {
-    //         HttpOnly = true,
-    //         Expires = refreshToken.ExpiresAt,
-    //         SameSite = SameSiteMode.Strict,
-    //         Secure = true,
-    //     });
-    //     Response.Cookies.Append("access_token", token, new CookieOptions
-    //     {
-    //         HttpOnly = true,
-    //         Expires = DateTime.UtcNow.AddMinutes(5),
-    //         SameSite = SameSiteMode.Strict,
-    //         Secure = true,
-    //     });
-    //     return Ok(new { token });
-    // }
+   
 
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh()
@@ -255,20 +232,7 @@ public class AuthorController : ControllerBase
             if (string.IsNullOrEmpty(oldRefreshToken))
                 return Unauthorized("No refresh token provided");
 
-            // var storedToken = await _db.RefreshTokens
-            // .Include(x => x.User)
-            // .FirstOrDefaultAsync(x => x.Token == oldRefreshToken && !x.Revoked && x.ExpiresAt > DateTime.UtcNow);
-
-            // if (storedToken == null)
-            // {
-            //     return Unauthorized("Invalid refresh token");
-            // }
-            // storedToken.Revoked = true;
-            // storedToken.RevokedAt = DateTime.UtcNow;
-            // await _db.SaveChangesAsync();
-
-            // var newRefreshToken = await _refreshTokenServices.CreateRefreshTokenAsync(storedToken.UserId, HttpContext);
-            // var newAccessToken = await GererateJwtToken(storedToken.User);
+           
             var result = await _authService.RefreshAsync(oldRefreshToken, HttpContext);
             var newAccessToken = result.AccessToken;
             var newRefreshToken = result.RefreshToken;
@@ -351,17 +315,7 @@ public class AuthorController : ControllerBase
         }
 
 
-        // var storedToken = await _db.RefreshTokens
-        // .FirstOrDefaultAsync(x => x.Token == refreshToken && !x.Revoked && x.ExpiresAt > DateTime.UtcNow);
-        // if (storedToken == null)
-        // {
-        //     return BadRequest("Invalid refresh token");
-        // }
-
-        // storedToken.Revoked = true;
-        // storedToken.RevokedAt = DateTime.UtcNow;
-
-        // await _db.SaveChangesAsync();
+       
 
     }
 
@@ -402,22 +356,7 @@ public class AuthorController : ControllerBase
             return BadRequest(ex.Message);
 
         }
-        // var oldUser = await _db.Users.FirstOrDefaultAsync(u => u.Id.ToString() == userId);
-        // if (oldUser == null)
-        // {
-        //     return NotFound("User not found");
-        // }
-        // var emailExist = await _db.Users.AnyAsync(u => u.Email == email && u.Id.ToString() != userId);
-        // if (emailExist)
-        // {
-        //     return BadRequest("Email already in use");
-        // }
-        // oldUser.Email = email;
-        // oldUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
-        // await _db.SaveChangesAsync();
-
-
-        // return Ok("User updated successfully");
+        
     }
     [Authorize]
     [HttpPut("update-user-password")]
@@ -465,9 +404,5 @@ public class AuthorController : ControllerBase
 
         return Ok("Users create successfully");
     }
-
-
-   
-
 
 }

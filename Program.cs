@@ -1,4 +1,6 @@
 
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -20,8 +22,15 @@ builder.Services.Configure<SmtpSettings>(
 
 //JWT Authentication
 var jwt =builder.Configuration.GetSection("Jwt"); 
-builder.Services.AddAuthentication( JwtBearerDefaults.AuthenticationScheme
+builder.Services.AddAuthentication( options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme    = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme       = CookieAuthenticationDefaults.AuthenticationScheme; // ← thêm
+    // options.DefaultChallengeScheme = FacebookDefaults.AuthenticationScheme;
+}
 
+).AddCookie(
 ).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -46,6 +55,30 @@ builder.Services.AddAuthentication( JwtBearerDefaults.AuthenticationScheme
         }
     };
   
+}).AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["OAuth:Google:ClientId"]!;
+        options.ClientSecret = builder.Configuration["OAuth:Google:ClientSecret"]!;
+        options.CallbackPath = "/signin-google";
+      
+    
+ options.SaveTokens = true;
+    
+    }).AddFacebook(options =>
+{
+    options.AppId     = builder.Configuration["OAuth:Facebook:AppId"]!;
+    options.AppSecret = builder.Configuration["OAuth:Facebook:AppSecret"]!;
+    // options.CallbackPath = "/api/auth/facebook/callback"; // phải khớp với Facebook Dashboard
+      
+    options.Scope.Clear();
+    options.Scope.Add("public_profile");
+
+    // Fields lấy từ Graph API
+    options.Fields.Add("id");
+    options.Fields.Add("name");
+    options.Fields.Add("email");
+    options.Fields.Add("picture");
+     
 });
 //Swagger token jwt gen 
 builder.Services.AddSwaggerGen(c =>
@@ -109,7 +142,7 @@ builder.Services.AddScoped<IOrderService,OrderService>();
 // builder.Services.AddAuthentication();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -117,16 +150,18 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDefaultFiles();
     app.UseStaticFiles();
+    app.UseHttpsRedirection();
     app.UseSwagger();
     app.UseSwaggerUI();
     
 
-    app.UseAuthentication();
-    app.UseAuthorization();
+    // app.UseAuthentication();
+    // app.UseAuthorization();
     app.MapControllers();
     
 }
-
+app.UseAuthentication();
+    app.UseAuthorization();
 
 app.UseHttpsRedirection();
 

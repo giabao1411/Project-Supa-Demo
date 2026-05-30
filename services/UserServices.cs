@@ -11,18 +11,18 @@ public class UserServices : IUserService
 
     public UserServices(AppDbContext db, TokenService tokenService, RefreshTokenServices refreshTokenServices)
     {
-       _db = db;
+        _db = db;
         _tokenService = tokenService;
         _refreshTokenServices = refreshTokenServices;
     }
 
-   public async Task<UserDTO> GetByIdAsync(Guid? id)
+    public async Task<UserDTO> GetByIdAsync(Guid? id)
     {
-        var user = await _db.Users.Where(u =>u.Id == id)
+        var user = await _db.Users.Where(u => u.Id == id)
         .Select(u => new UserDTO
         {
-            Id= u.Id,
-            Email= u.Email,
+            Id = u.Id,
+            Email = u.Email,
             CreatedAt = u.CreatedAt,
             IsEmailVerified = u.IsEmailVerified,
             AvatarUrl = u.AvatarUrl,
@@ -39,13 +39,13 @@ public class UserServices : IUserService
         return user;
     }
 
-    public async Task<PageResult<UserDTO>> GetAllAsync(int page=1 , int pageSize=10)
+    public async Task<PageResult<UserDTO>> GetAllAsync(int page = 1, int pageSize = 10)
     {
         var users = await _db.Users.Select(u => new UserDTO
         {
-            Id= u.Id,
-            Email= u.Email,
-            CreatedAt= u.CreatedAt,
+            Id = u.Id,
+            Email = u.Email,
+            CreatedAt = u.CreatedAt,
             IsEmailVerified = u.IsEmailVerified,
             AvatarUrl = u.AvatarUrl,
             Roles = u.UserRoles.Select(ur => new RoleDTO
@@ -72,14 +72,14 @@ public class UserServices : IUserService
         if (user == null)
             throw new Exception("User not found");
         var userRoles = await _db.UserRoles.Where(ur => ur.UserId.ToString() == id).ToListAsync();
-        _db.UserRoles.RemoveRange(userRoles);    
+        _db.UserRoles.RemoveRange(userRoles);
         _db.Users.Remove(user);
 
         await _db.SaveChangesAsync();
     }
     public async Task UpdateAsync(UserDTO dto)
     {
-       var oldUser = await _db.Users.FirstOrDefaultAsync(u => u.Id == dto.Id);
+        var oldUser = await _db.Users.FirstOrDefaultAsync(u => u.Id == dto.Id);
         if (oldUser == null)
         {
             throw new Exception("User not found");
@@ -87,13 +87,13 @@ public class UserServices : IUserService
         var emailExist = await _db.Users.AnyAsync(u => u.Email == dto.Email && u.Id != dto.Id);
         if (emailExist)
         {
-           throw new Exception("Email already in use");
+            throw new Exception("Email already in use");
         }
         oldUser.Email = dto.Email;
         oldUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.password);
-        if( !string.IsNullOrEmpty(dto.AvatarUrl))
+        if (!string.IsNullOrEmpty(dto.AvatarUrl))
         {
-            if(oldUser.AvatarUrl !=null)
+            if (oldUser.AvatarUrl != null)
                 FileHelper.DeleteFile(oldUser.AvatarUrl);
             oldUser.AvatarUrl = dto.AvatarUrl;
         }
@@ -152,7 +152,7 @@ public class UserServices : IUserService
                 AvatarUrl = dto.AvatarUrl
             };
             _db.Users.Add(user);
-           
+
             if (dto.Roles.Count() != 0)
             {
                 foreach (var role in dto.Roles)
@@ -184,36 +184,86 @@ public class UserServices : IUserService
         {
             Id = r.Id.ToString(),
             Name = r.Name,
-            
+
         }).ToList();
     }
-    public async Task<PageResult<UserDTO>> GetUsersByKeyWordAsync(string keyWord,string roleId="",int page=1,int pageSize=10){
-        var query=  _db.Users.Where(u => u.Email.Contains(keyWord));
-        if(!string.IsNullOrEmpty(roleId)){
+    public async Task<PageResult<UserDTO>> GetUsersByKeyWordAsync(string keyWord, string roleId = "", int page = 1, int pageSize = 10)
+    {
+        var query = _db.Users.Where(u => u.Email.Contains(keyWord));
+        if (!string.IsNullOrEmpty(roleId))
+        {
             query = query.Where(u => _db.UserRoles.Any(ur => ur.RoleId.ToString() == roleId && ur.UserId == u.Id));
         }
-         var uses = await query
-        .Select(u => new UserDTO
-        {
-            Id= u.Id,
-            Email= u.Email,
-            CreatedAt= u.CreatedAt,
-            IsEmailVerified = u.IsEmailVerified,
-            Role = u.UserRoles.Select(ur => new RoleDTO
-            {
-                Id = ur.RoleId.ToString(),
-                Name = ur.Role.Name,
-            }).First(),
+        var uses = await query
+       .Select(u => new UserDTO
+       {
+           Id = u.Id,
+           Email = u.Email,
+           CreatedAt = u.CreatedAt,
+           IsEmailVerified = u.IsEmailVerified,
+           Role = u.UserRoles.Select(ur => new RoleDTO
+           {
+               Id = ur.RoleId.ToString(),
+               Name = ur.Role.Name,
+           }).First(),
 
-        }).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+       }).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         var totalCount = await query.CountAsync();
-           
-        return  new PageResult<UserDTO>
+
+        return new PageResult<UserDTO>
         {
             Items = uses,
             TotalItems = totalCount,
             Page = page,
             PageSize = pageSize
         };
+    }
+
+    public async Task<User> FindOrCreateUserOAuth2(string? email, string? name, string provider, string providerId, string? avatar)
+    {
+        var extLogin = await _db.ExternalLogins
+                            .Include(x => x.User)
+                            .FirstOrDefaultAsync(x => x.Provider == provider && x.ProviderKey == providerId);
+        if (extLogin != null)
+        {
+            if (!string.IsNullOrEmpty(avatar))
+                extLogin.User.AvatarUrl = avatar;
+            return extLogin.User;
+        }
+        var user = email != null ? await _db.Users.FirstOrDefaultAsync(u => u.Email == email) : null;
+        if (user == null)
+        {
+            user = new User
+            {
+                Email = email ?? string.Empty,
+                CreatedAt = DateTime.UtcNow,
+                AvatarUrl = avatar ?? string.Empty,
+
+
+            };
+            _db.Users.Add(user);
+            // Default role assignment
+            var role = await _db.Roles.FirstOrDefaultAsync(r => r.Name == "User");
+            if (role == null)
+                throw new Exception("Default role not found");
+            var userRole = new UserRole
+            {
+                UserId = user.Id,
+                RoleId = role.Id
+            };
+            _db.UserRoles.Add(userRole);
+
+            await _db.SaveChangesAsync();
+
+        }
+        _db.ExternalLogins.Add(new ExternalLogin
+        {
+            UserId = user.Id,
+            Provider = provider,
+            ProviderKey = providerId,
+
+        });
+        await _db.SaveChangesAsync();
+        return user;
     }
 }

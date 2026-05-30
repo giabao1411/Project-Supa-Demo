@@ -132,7 +132,7 @@
 </div>
 </div>
 <script>
-    const API = "http://localhost:5075/api/auth";
+    const API = window.location.origin+"/api/auth";
 var registerBtn = document.getElementById("registerBtn");
 registerBtn.addEventListener("click", function(event) {
     event.preventDefault();
